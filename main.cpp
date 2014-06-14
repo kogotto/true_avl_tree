@@ -74,6 +74,31 @@ private:
         delete root;
     }
 
+    static node_t * rotateLeft(node_t  * root) {
+        node_t * right = root->right;
+
+        root->right = right->left;
+        right->left = root;
+
+
+        fixHeight(root);
+        fixeight(right);
+
+        return right;
+    }
+
+    static node_t * rotateRight(node_t * root) {
+        node_t * left = root->left;
+
+        root->left = left->right;
+        left->right = root;
+
+        fixHeight(root);
+        fixHeight(left);
+
+        return left;
+    }
+
     node_t * root;
 };
 
