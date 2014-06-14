@@ -1,3 +1,4 @@
+#include <stdlib.h>
 #include <iostream>
 using namespace std;
 
@@ -7,6 +8,7 @@ public:
     typedef T key_t;
     typedef U data_t;
     typedef unsigned char height_t;
+    typedef signed char dh_t;
 
     TAvlTree():
         root(0)
@@ -45,6 +47,8 @@ private:
         return root->height;
     }
 
+
+
     static void fixHeight(node_t * root) {
         root->height = max(height(root->left), height(root->right)) + 1;
     }
@@ -60,6 +64,10 @@ private:
 
         fixHeight(root);
 
+        if (abs(dh(root)) > 1) {
+            root = balance(root);
+        }
+
         return root;
     }
 
@@ -74,6 +82,25 @@ private:
         delete root;
     }
 
+    static node_t * balance(node_t * root) {
+        if (dh(root) == -2) {
+            if (dh(root->right) == 1) {
+                root->right = rotateRight(root->right);
+            }
+
+            return rotateLeft(root);
+        }
+
+        if (dh(root) == 2) {
+            if (dh(root->left) == -1) {
+                root->left = rotateLeft(root->left);
+            }
+            return rotateRight(root);
+        }
+
+        return root;
+    }
+
     static node_t * rotateLeft(node_t  * root) {
         node_t * right = root->right;
 
@@ -82,7 +109,7 @@ private:
 
 
         fixHeight(root);
-        fixeight(right);
+        fixHeight(right);
 
         return right;
     }
@@ -97,6 +124,12 @@ private:
         fixHeight(left);
 
         return left;
+    }
+
+    static dh_t dh(node_t * root) {
+        dh_t result = static_cast<dh_t>(height(root->left)) -
+                static_cast<dh_t>(height(root->right));
+        return result;
     }
 
     node_t * root;
