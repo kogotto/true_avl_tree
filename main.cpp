@@ -6,6 +6,7 @@ class TAvlTree {
 public:
     typedef T key_t;
     typedef U data_t;
+    typedef unsigned char height_t;
 
     TAvlTree():
         root(0)
@@ -25,27 +26,41 @@ private:
             key(key),
             data(data),
             left(0),
-            right(0)
+            right(0),
+            height(1)
         {}
 
         key_t key;
         data_t data;
         node_t * left;
         node_t * right;
+        height_t height;
     };
+
+    static height_t height(node_t * root) {
+        if (root == 0) {
+            return 0;
+        }
+
+        return root->height;
+    }
+
+    static void fixHeight(node_t * root) {
+        root->height = max(height(root->left), height(root->right)) + 1;
+    }
 
     static node_t * insert(node_t * root, const key_t & key, const data_t & data = data_t()) {
         if (root == 0) {
             return new node_t(key, data);
         }
 
-        if (key < root->key) {
-            root->left = insert(root->left, key, data);
-            return root;
-        } else {
-            root->right = insert(root->right, key, data);
-            return root;
-        }
+
+        node_t *& insertionPlace = (key < root->key) ? root->left : root->right;
+        insertionPlace = insert(insertionPlace, key, data);
+
+        fixHeight(root);
+
+        return root;
     }
 
     static void free(node_t * root) {
