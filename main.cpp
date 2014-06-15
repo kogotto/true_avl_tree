@@ -8,20 +8,7 @@ public:
     typedef T key_t;
     typedef U data_t;
     typedef unsigned char height_t;
-    typedef signed char dh_t;
-
-    TAvlTree():
-        root(0)
-    {}
-    ~TAvlTree() {
-        free(root);
-    }
-
-    void insert(const key_t & key, const data_t & data = data_t()) {
-        root = insert(root, key, data);
-    }
-
-private:
+    typedef int dh_t;
 
     struct node_t {
         node_t(const key_t & key, const data_t & data):
@@ -34,10 +21,46 @@ private:
 
         key_t key;
         data_t data;
+
         node_t * left;
         node_t * right;
         height_t height;
     };
+
+    TAvlTree():
+        root(0)
+    {}
+
+    ~TAvlTree() {
+        free(root);
+    }
+
+    void insert(const key_t & key, const data_t & data = data_t()) {
+        root = insert(root, key, data);
+    }
+
+    node_t * find(const key_t & key) {
+        node_t * current = root;
+
+        while(1) {
+            if (current == 0) {
+                return 0;
+            }
+
+            if (current->key == key) {
+                return current;
+            }
+
+            current = (key < current->key) ? current->left : current->right;
+        }
+    }
+
+    void remove(const key_t & key) {
+        root = remove(root, key);
+    }
+
+private:
+
 
     static height_t height(node_t * root) {
         if (root == 0) {
@@ -58,17 +81,52 @@ private:
             return new node_t(key, data);
         }
 
-
         node_t *& insertionPlace = (key < root->key) ? root->left : root->right;
         insertionPlace = insert(insertionPlace, key, data);
 
-        fixHeight(root);
+        return balance(root);
+    }
 
-        if (abs(dh(root)) > 1) {
-            root = balance(root);
+    static node_t * remove(node_t * root, const key_t & key) {
+        if (root == 0) {
+            return root;
+        }
+
+        if (key < root->key) {
+            root->left = remove(root->left, key);
+            return root;
+        }
+
+        if (key > root->key) {
+            root->right = remove(root->right, key);
+            return root;
+        }
+
+        if (root->right == 0) {
+            node_t * left = root->left;
+            delete root;
+            return left;
+        } else {
+            swap(root, leftMost(root->right));
+            root->right = remove(root->right, key);
+            return root;
         }
 
         return root;
+    }
+
+    static node_t * leftMost(node_t * root) {
+        node_t * current = root;
+        while (current->left != 0) {
+            current = current->left;
+        }
+
+        return current;
+    }
+
+    static void swap(node_t * lhs, node_t * rhs) {
+        std::swap(lhs->key, rhs->key);
+        std::swap(lhs->data, rhs->data);
     }
 
     static void free(node_t * root) {
@@ -83,6 +141,8 @@ private:
     }
 
     static node_t * balance(node_t * root) {
+        fixHeight(root);
+
         if (dh(root) == -2) {
             if (dh(root->right) == 1) {
                 root->right = rotateRight(root->right);
@@ -127,9 +187,8 @@ private:
     }
 
     static dh_t dh(node_t * root) {
-        dh_t result = static_cast<dh_t>(height(root->left)) -
+        return static_cast<dh_t>(height(root->left)) -
                 static_cast<dh_t>(height(root->right));
-        return result;
     }
 
     node_t * root;
@@ -138,16 +197,33 @@ private:
 typedef int key_t;
 typedef struct {} data_t;
 
+typedef TAvlTree<key_t, data_t> TTree;
+
+
 int main()
 {
-    TAvlTree<key_t, data_t> tree;
+    TTree tree;
     size_t size = 0;
     cin >> size;
     for (size_t i = 0; i < size; ++i) {
-        key_t key = 0;
+        int key = 0;
         cin >> key;
-        tree.insert(key);
+
+        if (key > 0) {
+            tree.insert(static_cast<key_t>(key));
+        }
+
+        if (key < 0) {
+            tree.remove(static_cast<key_t>(-key));
+        }
     }
+
+#define FIND(s) {cout << "find(" << #s << ") = " << (tree.find(s) != 0? "OK":"FAIL") << endl;}
+    FIND(1);
+    FIND(5);
+    FIND(10);
+    FIND(100);
+#undef FIND
 
     return 0;
 }
