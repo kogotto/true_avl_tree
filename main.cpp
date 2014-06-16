@@ -96,6 +96,16 @@ private:
             return root;
         }
 
+        if (root->key == key) {
+            if (root->right == 0) {
+                node_t * left = root->left;
+                delete root;
+                return left;
+            } else {
+                return swapAndRemove(root, root, leftMost(root->right));
+            }
+        }
+
         if (key < root->key) {
             root->left = remove(root->left, key);
             return balance(root);
@@ -105,16 +115,19 @@ private:
             root->right = remove(root->right, key);
             return balance(root);
         }
+    }
 
-        if (root->right == 0) {
-            node_t * left = root->left;
-            delete root;
-            return left;
-        } else {
-            swap(root, leftMost(root->right));
-            root->right = remove(root->right, key);
-            return balance(root);
+    static node_t * swapAndRemove(node_t * root, node_t * current, node_t * pivot) {
+        if (current == pivot) {
+            swap(root, pivot);
+            delete pivot;
+            return 0;
         }
+
+        node_t *& position = (pivot->key < current->key) ? current->left : current->right;
+        position = swapAndRemove(root, position, pivot);
+
+        return balance(current);
     }
 
     static node_t * leftMost(node_t * root) {
