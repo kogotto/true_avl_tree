@@ -59,8 +59,8 @@ public:
         root = remove(root, key);
     }
 
-    height_t height() const {
-        return height(root);
+    size_t height() const {
+        return static_cast<size_t>(height(root));
     }
 
 private:
@@ -205,11 +205,13 @@ typedef TAvlTree<key_t, data_t> TTree;
 int main()
 {
     TTree tree;
-    size_t size = 0;
-    cin >> size;
-    for (size_t i = 0; i < size; ++i) {
+    for (;;) {
         int key = 0;
         cin >> key;
+
+        if (cin.eof()) {
+            break;
+        }
 
         if (key > 0) {
             tree.insert(static_cast<key_t>(key));
@@ -220,12 +222,7 @@ int main()
         }
     }
 
-#define FIND(s) {cout << "find(" << #s << ") = " << (tree.find(s) != 0? "OK":"FAIL") << endl;}
-    FIND(1);
-    FIND(5);
-    FIND(10);
-    FIND(100);
-#undef FIND
+    cout << tree.height();
 
     return 0;
 }
