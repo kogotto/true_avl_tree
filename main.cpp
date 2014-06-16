@@ -214,7 +214,6 @@ typedef struct {} data_t;
 
 typedef TAvlTree<key_t, data_t> TTree;
 
-
 int main()
 {
     TTree tree;
