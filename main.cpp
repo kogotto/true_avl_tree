@@ -59,6 +59,10 @@ public:
         root = remove(root, key);
     }
 
+    height_t height() const {
+        return height(root);
+    }
+
 private:
 
 
@@ -94,12 +98,12 @@ private:
 
         if (key < root->key) {
             root->left = remove(root->left, key);
-            return root;
+            return balance(root);
         }
 
         if (key > root->key) {
             root->right = remove(root->right, key);
-            return root;
+            return balance(root);
         }
 
         if (root->right == 0) {
@@ -109,10 +113,8 @@ private:
         } else {
             swap(root, leftMost(root->right));
             root->right = remove(root->right, key);
-            return root;
+            return balance(root);
         }
-
-        return root;
     }
 
     static node_t * leftMost(node_t * root) {
