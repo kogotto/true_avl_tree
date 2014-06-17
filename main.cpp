@@ -101,8 +101,13 @@ private:
                 node_t * left = root->left;
                 delete root;
                 return left;
+            } else if (root->left == 0) {
+                node_t * right = root->right;
+                delete root;
+                return right;
             } else {
-                return swapAndRemove(root, root, leftMost(root->right));
+                node_t * pivot = (dh(root) > 0) ? rightMost(root->left) : leftMost(root->left);
+                return swapAndRemove(root, root, pivot);
             }
         }
 
@@ -134,6 +139,15 @@ private:
         node_t * current = root;
         while (current->left != 0) {
             current = current->left;
+        }
+
+        return current;
+    }
+
+    static node_t * rightMost(node_t * root) {
+        node_t * current = root;
+        while (current->right != 0) {
+            current = current->right;
         }
 
         return current;
