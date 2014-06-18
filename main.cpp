@@ -97,18 +97,7 @@ private:
         }
 
         if (root->key == key) {
-            if (root->right == 0) {
-                node_t * left = root->left;
-                delete root;
-                return left;
-            } else if (root->left == 0) {
-                node_t * right = root->right;
-                delete root;
-                return right;
-            } else {
-                node_t * pivot = (dh(root) > 0) ? rightMost(root->left) : leftMost(root->right);
-                return swapAndRemove(root, root, pivot);
-            }
+            return removeRoot(root);
         }
 
         if (key < root->key) {
@@ -133,6 +122,37 @@ private:
         position = swapAndRemove(root, position, pivot);
 
         return balance(current);
+    }
+
+    static node_t * removeRoot(node_t * root) {
+        if (root->right == 0) {
+            node_t * left = root->left;
+            delete root;
+            return left;
+        } else if (root->left == 0) {
+            node_t * right = root->right;
+            delete root;
+            return right;
+        } else {
+            node_t * pivot = (dh(root) > 0) ? rightMost(root->left) : leftMost(root->right);
+            return swapAndRemove(root, root, pivot);
+        }
+    }
+
+    static size_t childCount(node_t * node) {
+        if (node == 0) {
+            return 0;
+        }
+
+        size_t result = 0;
+        if (node->left != 0) {
+            ++result;
+        }
+        if (node->right != 0) {
+            ++result;
+        }
+
+        return result;
     }
 
     static node_t * leftMost(node_t * root) {
