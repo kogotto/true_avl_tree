@@ -106,7 +106,7 @@ private:
                 delete root;
                 return right;
             } else {
-                node_t * pivot = (dh(root) > 0) ? rightMost(root->left) : leftMost(root->left);
+                node_t * pivot = (dh(root) > 0) ? rightMost(root->left) : leftMost(root->right);
                 return swapAndRemove(root, root, pivot);
             }
         }
