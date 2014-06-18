@@ -96,10 +96,6 @@ private:
             return root;
         }
 
-        if (root->key == key) {
-            return removeRoot(root);
-        }
-
         if (key < root->key) {
             root->left = remove(root->left, key);
             return balance(root);
@@ -109,13 +105,15 @@ private:
             root->right = remove(root->right, key);
             return balance(root);
         }
+
+        //  key == root->key
+        return removeRoot(root);
     }
 
     static node_t * swapAndRemove(node_t * root, node_t * current, node_t * pivot) {
         if (current == pivot) {
             swap(root, pivot);
-            delete pivot;
-            return 0;
+            return removeRootWithOnlyOneChild(pivot);
         }
 
         node_t *& position = (pivot->key < current->key) ? current->left : current->right;
@@ -125,18 +123,18 @@ private:
     }
 
     static node_t * removeRoot(node_t * root) {
-        if (root->right == 0) {
-            node_t * left = root->left;
-            delete root;
-            return left;
-        } else if (root->left == 0) {
-            node_t * right = root->right;
-            delete root;
-            return right;
-        } else {
+        if (childCount(root) == 2) {
             node_t * pivot = (dh(root) > 0) ? rightMost(root->left) : leftMost(root->right);
             return swapAndRemove(root, root, pivot);
         }
+
+        return removeRootWithOnlyOneChild(root);
+    }
+
+    static node_t * removeRootWithOnlyOneChild(node_t * root) {
+        node_t * newRoot = (root->right == 0) ? root->left : root->right;
+        delete root;
+        return newRoot;
     }
 
     static size_t childCount(node_t * node) {
