@@ -85,6 +85,10 @@ private:
             return new node_t(key, data);
         }
 
+        if (key == root->key) {
+            return root;
+        }
+
         node_t *& insertionPlace = (key < root->key) ? root->left : root->right;
         insertionPlace = insert(insertionPlace, key, data);
 
