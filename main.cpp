@@ -117,7 +117,7 @@ private:
     static node_t * swapAndRemove(node_t * root, node_t * current, node_t * pivot) {
         if (current == pivot) {
             swap(root, pivot);
-            return removeRootWithOnlyOneChild(pivot);
+            return removeRootWithLessThenTwoChildren(pivot);
         }
 
         node_t *& position = (pivot->key < current->key) ? current->left : current->right;
@@ -132,10 +132,10 @@ private:
             return swapAndRemove(root, root, pivot);
         }
 
-        return removeRootWithOnlyOneChild(root);
+        return removeRootWithLessThenTwoChildren(root);
     }
 
-    static node_t * removeRootWithOnlyOneChild(node_t * root) {
+    static node_t * removeRootWithLessThenTwoChildren(node_t * root) {
         node_t * newRoot = (root->right == 0) ? root->left : root->right;
         delete root;
         return newRoot;
